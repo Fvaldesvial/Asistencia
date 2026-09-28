@@ -1,0 +1,912 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Asistencia LDZ</title>
+<meta name="theme-color" content="#14202b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Asistencia">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@600;700&family=JetBrains+Mono:wght@500;600&display=swap">
+<style>
+:root{
+  --bg:#E9EDF0;--surface:#FFFFFF;--surface2:#F3F6F8;--ink:#14202B;--muted:#5A6774;--line:#D2D9DF;
+  --accent:#E3A21A;--accent-ink:#1E1604;
+  --ent:#1D7F52;--ent-bg:#E0F1E8;--sal:#B93D29;--sal-bg:#F7E3DF;--col:#2B67A8;--col-bg:#E1EBF6;
+  --warn:#8E5A00;--warn-bg:#FAEFD6;--shadow:0 1px 2px rgba(20,32,43,.06),0 6px 18px rgba(20,32,43,.06);
+  --f-disp:'Barlow Condensed','Arial Narrow',system-ui,sans-serif;
+  --f-body:'Barlow',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-mono:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0E151C;--surface:#17212B;--surface2:#1C2833;--ink:#E6ECF1;--muted:#94A2AF;--line:#2A3743;
+  --accent:#F0B43A;--accent-ink:#1E1604;
+  --ent:#36B57B;--ent-bg:#16322A;--sal:#E3634D;--sal-bg:#3A1F1B;--col:#5C9BE0;--col-bg:#18293D;
+  --warn:#F0B43A;--warn-bg:#342913;--shadow:0 1px 2px rgba(0,0,0,.3);color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#0E151C;--surface:#17212B;--surface2:#1C2833;--ink:#E6ECF1;--muted:#94A2AF;--line:#2A3743;
+  --accent:#F0B43A;--accent-ink:#1E1604;
+  --ent:#36B57B;--ent-bg:#16322A;--sal:#E3634D;--sal-bg:#3A1F1B;--col:#5C9BE0;--col-bg:#18293D;
+  --warn:#F0B43A;--warn-bg:#342913;--shadow:0 1px 2px rgba(0,0,0,.3);color-scheme:dark;}
+
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.45 var(--f-body);-webkit-font-smoothing:antialiased;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+[hidden]{display:none!important}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.wrap{max-width:520px;margin:0 auto;padding-inline:16px;padding-block:12px 40px;display:flex;flex-direction:column;gap:16px}
+
+.demo{background:var(--warn-bg);color:var(--warn);font-size:13px;padding:8px 16px;text-align:center}
+.top{display:flex;align-items:center;gap:12px;padding-block:4px}
+.marca{width:38px;height:38px;border-radius:9px;background:var(--ink);display:grid;place-items:center;flex:none}
+.marca svg{width:22px;height:22px}
+.top .t1{font:700 20px/1 var(--f-disp);letter-spacing:.02em;text-transform:uppercase}
+.top .t2{font-size:13px;color:var(--muted)}
+.top .quien{margin-left:auto;text-align:right;font-size:14px;line-height:1.2}
+.top .quien b{display:block;font-weight:600}
+.link{background:none;border:0;padding:0;color:var(--muted);text-decoration:underline;text-underline-offset:3px;font-size:13px}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+h2{font:700 15px/1.2 var(--f-disp);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0}
+
+/* Login */
+.buscar{width:100%;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:var(--surface);font:inherit;color:var(--ink)}
+.personas{display:flex;flex-direction:column;gap:8px}
+.persona{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.persona .ini{width:40px;height:40px;border-radius:50%;background:var(--surface2);display:grid;place-items:center;font:700 16px var(--f-disp);color:var(--muted);flex:none}
+.persona .nm{font-weight:600;font-size:17px}
+.persona .ult{margin-left:auto;font-size:12px;color:var(--muted)}
+.chk{display:flex;gap:10px;align-items:flex-start;font-size:14px;color:var(--muted)}
+.chk input{width:20px;height:20px;margin:1px 0 0;accent-color:var(--accent)}
+
+/* PIN */
+.pin{padding:20px 16px;display:flex;flex-direction:column;align-items:center;gap:16px}
+.pin .nm{font:700 26px/1.1 var(--f-disp);text-align:center}
+.puntos{display:flex;gap:14px;height:18px}
+.puntos i{width:14px;height:14px;border-radius:50%;border:2px solid var(--muted)}
+.puntos i.on{background:var(--ink);border-color:var(--ink)}
+.pin .err{color:var(--sal);font-size:14px;min-height:20px;text-align:center}
+.teclado{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:100%;max-width:300px}
+.teclado button{height:62px;border-radius:14px;border:1px solid var(--line);background:var(--surface2);font:600 26px var(--f-mono)}
+.teclado button.sec{font:600 15px var(--f-body);color:var(--muted);background:transparent;border-color:transparent}
+
+/* Panel / reloj */
+.reloj{padding:18px 18px 0;position:relative;overflow:hidden}
+.reloj .hora{font:600 52px/1 var(--f-mono);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.reloj .hora small{font-size:24px;color:var(--muted);margin-left:2px}
+.reloj .fecha{color:var(--muted);margin-top:6px}
+.estado{display:inline-flex;align-items:center;gap:8px;margin-top:14px;padding:6px 12px;border-radius:999px;font-weight:600;font-size:14px;background:var(--surface2);color:var(--muted)}
+.estado::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
+.estado.turno{background:var(--ent-bg);color:var(--ent)}
+.estado.colacion{background:var(--col-bg);color:var(--col)}
+.perfora{margin:18px -18px 0;border-top:2px dashed var(--line);position:relative}
+.perfora::before,.perfora::after{content:"";position:absolute;top:-10px;width:18px;height:18px;border-radius:50%;background:var(--bg);border:1px solid var(--line)}
+.perfora::before{left:-10px}.perfora::after{right:-10px}
+.campos{padding:16px 0 18px;display:flex;flex-direction:column;gap:12px}
+.campo label{display:block;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+select{width:100%;padding:13px 40px 13px 14px;border:1px solid var(--line);border-radius:10px;background:var(--surface2);color:var(--ink);font:500 17px var(--f-body);appearance:none;
+  background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 20px) 55%,calc(100% - 14px) 55%;background-size:6px 6px;background-repeat:no-repeat}
+select:disabled{opacity:1;color:var(--ink);background-image:none}
+.gps{display:flex;gap:10px;align-items:flex-start;font-size:14px;padding:10px 12px;border-radius:10px;background:var(--surface2);color:var(--muted)}
+.gps .ico{flex:none;margin-top:2px;width:10px;height:10px;border-radius:50%;background:var(--muted)}
+.gps.ok{background:var(--ent-bg);color:var(--ent)}.gps.ok .ico{background:var(--ent)}
+.gps.aviso{background:var(--warn-bg);color:var(--warn)}.gps.aviso .ico{background:var(--warn)}
+.gps.mal{background:var(--sal-bg);color:var(--sal)}.gps.mal .ico{background:var(--sal)}
+.gps .ico.pulso{animation:pulso 1.2s ease-in-out infinite}
+@keyframes pulso{50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){.gps .ico.pulso{animation:none}}
+
+/* Botones de marca */
+.acciones{display:flex;flex-direction:column;gap:10px}
+.bm{width:100%;min-height:66px;border:0;border-radius:14px;color:#fff;font:700 23px/1 var(--f-disp);letter-spacing:.05em;text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:12px;transition:transform .08s}
+.bm:active{transform:scale(.985)}
+.bm svg{width:24px;height:24px;flex:none}
+.bm.ent{background:var(--ent)}.bm.sal{background:var(--sal)}.bm.col{background:var(--col)}
+.bm.confirmar{outline:3px solid var(--accent);outline-offset:3px}
+.fila2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bs{width:100%;min-height:52px;border-radius:12px;border:1px solid var(--line);background:var(--surface);font:600 16px var(--f-body)}
+
+/* Semana */
+.semana{padding:16px 18px}
+.sem-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:10px}
+.sem-total{font:600 15px var(--f-mono)}
+.barra{height:8px;border-radius:4px;background:var(--surface2);overflow:hidden;margin-bottom:12px}
+.barra i{display:block;height:100%;background:var(--accent);border-radius:4px}
+.barra i.he{background:var(--sal)}
+.tramos{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.tramo{display:grid;grid-template-columns:44px 1fr auto;gap:12px;padding:10px 0;border-top:1px solid var(--line);align-items:start}
+.tramo .dia{text-align:center;line-height:1.1}
+.tramo .dia b{display:block;font:700 13px var(--f-disp);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.tramo .dia span{font:600 18px var(--f-mono)}
+.tramo .ob{font-weight:600;overflow-wrap:anywhere}
+.tramo .hr{font-size:13px;color:var(--muted)}
+.tramo .al{font-size:12px;color:var(--warn);margin-top:2px}
+.tramo .nt{font:600 15px var(--f-mono);white-space:nowrap}
+.vacio{color:var(--muted);font-size:14px;margin:0}
+.pend{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:12px 14px;border-radius:12px;background:var(--warn-bg);color:var(--warn);font-size:14px}
+.pend button{border:1px solid currentColor;background:transparent;color:inherit;border-radius:8px;padding:6px 10px;font-size:13px;font-weight:600;flex:none}
+.pie{display:flex;justify-content:center;gap:18px;flex-wrap:wrap}
+
+/* Overlays */
+.ov{position:fixed;inset:0;background:rgba(10,16,22,.55);display:flex;align-items:flex-end;justify-content:center;z-index:20;padding:16px;padding-bottom:calc(16px + env(safe-area-inset-bottom,0px))}
+.hoja{background:var(--surface);color:var(--ink);border-radius:18px;width:100%;max-width:480px;max-height:90vh;overflow:auto;padding:22px 20px;display:flex;flex-direction:column;gap:14px}
+.hoja h3{margin:0;font:700 24px/1.1 var(--f-disp);text-transform:uppercase;letter-spacing:.03em}
+.hoja p{margin:0}
+.hoja input[type=password],.hoja input[type=tel]{width:100%;padding:13px 14px;border:1px solid var(--line);border-radius:10px;background:var(--surface2);color:var(--ink);font:600 18px var(--f-mono)}
+.btn{width:100%;min-height:54px;border-radius:12px;border:0;font:700 19px var(--f-disp);letter-spacing:.05em;text-transform:uppercase;background:var(--ink);color:var(--surface)}
+.btn.sec{background:var(--surface2);color:var(--ink);border:1px solid var(--line)}
+.btn.acc{background:var(--accent);color:var(--accent-ink)}
+.spin{display:flex;align-items:center;gap:14px;font-weight:600}
+.spin i{width:22px;height:22px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--accent);animation:gira .8s linear infinite}
+@keyframes gira{to{transform:rotate(360deg)}}
+.ov.centro{align-items:center}
+
+/* Comprobante */
+.recibo{padding:0;gap:0;overflow:hidden}
+.recibo .cab{padding:18px 20px;color:#fff}
+.recibo .cab.ent{background:var(--ent)}.recibo .cab.sal{background:var(--sal)}.recibo .cab.col{background:var(--col)}
+.recibo .cab .tp{font:700 15px var(--f-disp);letter-spacing:.1em;text-transform:uppercase;opacity:.9}
+.recibo .cab .hh{font:600 46px/1.05 var(--f-mono)}
+.recibo .cab .ff{opacity:.9}
+.recibo dl{margin:0;padding:16px 20px;display:grid;grid-template-columns:auto 1fr;gap:8px 16px;font-size:14px}
+.recibo dt{color:var(--muted)}
+.recibo dd{margin:0;font-weight:500;overflow-wrap:anywhere}
+.recibo .cod{font:600 17px var(--f-mono);letter-spacing:.08em}
+.recibo .nota{margin:0 20px;padding:10px 12px;border-radius:10px;font-size:14px}
+.recibo .nota.aviso{background:var(--warn-bg);color:var(--warn)}
+.recibo .nota.pend{background:var(--warn-bg);color:var(--warn)}
+.recibo .pie-r{padding:16px 20px 20px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:12px 16px;border-radius:12px;font-size:14px;z-index:40;max-width:calc(100% - 32px);box-shadow:var(--shadow)}
+</style>
+</head>
+<body>
+<div class="demo" id="demoBanner" hidden>Modo demostración · las marcas quedan solo en este teléfono · PIN 1234</div>
+
+<div class="wrap">
+  <header class="top">
+    <div class="marca" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#E3A21A" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9.5 2.5h5"/></svg>
+    </div>
+    <div>
+      <div class="t1">Asistencia</div>
+      <div class="t2" id="empresa">LDZ Electricidad</div>
+    </div>
+    <div class="quien" id="quien" hidden><b id="quienNom"></b><button class="link" id="btnSalirSesion">Cambiar persona</button></div>
+  </header>
+
+  <!-- 1. ¿Quién marca? -->
+  <section id="vLogin" hidden>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <h2>¿Quién marca?</h2>
+      <input class="buscar" id="buscar" type="search" placeholder="Buscar nombre" autocomplete="off">
+      <div class="personas" id="personas"></div>
+      <label class="chk"><input type="checkbox" id="compartido"> <span>Teléfono compartido: volver a esta lista después de cada marca</span></label>
+    </div>
+  </section>
+
+  <!-- 2. PIN -->
+  <section id="vPin" hidden>
+    <div class="card pin">
+      <h2>Ingresa tu PIN</h2>
+      <div class="nm" id="pinNom"></div>
+      <div class="puntos" id="puntos"></div>
+      <div class="err" id="pinErr" role="alert"></div>
+      <div class="teclado" id="teclado">
+        <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
+        <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button>
+        <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button>
+        <button class="sec" data-k="volver">Volver</button><button data-k="0">0</button><button class="sec" data-k="borrar">Borrar</button>
+      </div>
+      <button class="btn acc" id="btnEntrar" disabled style="max-width:300px">Entrar</button>
+    </div>
+  </section>
+
+  <!-- 3. Panel de marca -->
+  <section id="vPanel" hidden style="display:flex;flex-direction:column;gap:16px">
+    <div class="card reloj">
+      <div class="hora mono" id="hora">--:--<small>:--</small></div>
+      <div class="fecha" id="fecha"></div>
+      <div class="estado" id="estado">Fuera de turno</div>
+      <div class="perfora" aria-hidden="true"></div>
+      <div class="campos">
+        <div class="campo">
+          <label for="obra">Obra</label>
+          <select id="obra"></select>
+        </div>
+        <div class="gps" id="gps" aria-live="polite"><span class="ico pulso"></span><span>Buscando señal GPS…</span></div>
+      </div>
+    </div>
+
+    <div class="acciones" id="acciones">
+      <button class="bm ent" data-t="ENTRADA"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M10 17l5-5-5-5M15 12H3M14 3h5a2 2 0 012 2v14a2 2 0 01-2 2h-5"/></svg>Marcar entrada</button>
+      <div class="fila2" id="filaCol">
+        <button class="bm col" data-t="INICIO_COLACION" style="font-size:19px">Iniciar colación</button>
+        <button class="bs" id="btnCambio">Cambiar de obra</button>
+      </div>
+      <button class="bm col" data-t="FIN_COLACION">Terminar colación</button>
+      <button class="bm sal" data-t="SALIDA"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>Marcar salida</button>
+    </div>
+
+    <div class="pend" id="pend" hidden><span id="pendTxt"></span><button id="btnReintentar">Enviar ahora</button></div>
+
+    <div class="card semana">
+      <div class="sem-head"><h2>Mis horas esta semana</h2><span class="sem-total" id="semTotal"></span></div>
+      <div class="barra" id="barra" hidden><i id="barraOrd"></i></div>
+      <ul class="tramos" id="tramos"></ul>
+    </div>
+  </section>
+
+  <div class="pie">
+    <button class="link" id="btnAdmin">Fijar ubicación de una obra</button>
+  </div>
+  <input type="file" id="selfie" accept="image/*" capture="user" hidden>
+</div>
+
+<!-- Overlays -->
+<div class="ov centro" id="ovBusy" hidden><div class="hoja" style="max-width:320px"><div class="spin"><i></i><span id="busyTxt">Enviando…</span></div></div></div>
+
+<div class="ov" id="ovRecibo" hidden>
+  <div class="hoja recibo" role="dialog" aria-labelledby="rTipo">
+    <div class="cab" id="rCab"><div class="tp" id="rTipo"></div><div class="hh" id="rHora"></div><div class="ff" id="rFecha"></div></div>
+    <dl>
+      <dt>Trabajador</dt><dd id="rNom"></dd>
+      <dt>Obra</dt><dd id="rObra"></dd>
+      <dt>Ubicación</dt><dd id="rUbi"></dd>
+      <dt>Código</dt><dd class="cod" id="rCod"></dd>
+    </dl>
+    <p class="nota" id="rNota" hidden></p>
+    <div class="pie-r"><button class="btn" id="btnListo">Listo</button></div>
+  </div>
+</div>
+
+<div class="ov" id="ovConfirm" hidden>
+  <div class="hoja" role="dialog" aria-labelledby="cTit">
+    <h3 id="cTit"></h3>
+    <p id="cTxt"></p>
+    <button class="btn acc" id="cSi"></button>
+    <button class="btn sec" id="cNo">Cancelar</button>
+  </div>
+</div>
+
+<div class="ov" id="ovCambio" hidden>
+  <div class="hoja" role="dialog" aria-labelledby="cbTit">
+    <h3 id="cbTit">Cambiar de obra</h3>
+    <p style="color:var(--muted)">Se marca tu salida de <b id="cbDesde"></b> y tu entrada en la nueva obra, con la misma ubicación y hora.</p>
+    <div class="campo"><label for="cbObra">Nueva obra</label><select id="cbObra"></select></div>
+    <button class="btn acc" id="cbOk">Cambiar de obra</button>
+    <button class="btn sec" data-cerrar>Cancelar</button>
+  </div>
+</div>
+
+<div class="ov" id="ovAdmin" hidden>
+  <div class="hoja" role="dialog" aria-labelledby="adTit">
+    <h3 id="adTit">Ubicación de obra</h3>
+    <p style="color:var(--muted)">Párate en la obra y guarda tu ubicación actual como su punto de referencia. Las marcas se comparan contra este punto.</p>
+    <div class="campo"><label for="adObra">Obra</label><select id="adObra"></select></div>
+    <div class="campo"><label for="adPin">PIN de administrador</label><input id="adPin" type="password" inputmode="numeric" autocomplete="off"></div>
+    <div class="gps" id="adGps"><span class="ico pulso"></span><span>Buscando señal GPS…</span></div>
+    <button class="btn acc" id="adOk">Guardar ubicación</button>
+    <button class="btn sec" data-cerrar>Cancelar</button>
+  </div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script>
+/* ================================================================
+   CONFIGURACIÓN: pega aquí la URL de tu Apps Script (termina en /exec).
+   Si queda vacía, la app funciona en modo demostración.
+   ================================================================ */
+const API_URL = 'https://script.google.com/macros/s/AKfycbwDHnujctWCof49ibdUX3MkAcrGOtRkeol5tL-MMaKzdt_KRd8ZFJlcy5thrx4OX7fR/exec';
+
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const store = (area) => ({
+  get(k, d) { try { const v = area().getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { area().setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } },
+  del(k) { try { area().removeItem(k); } catch (e) {} }
+});
+const LS = store(() => localStorage), SS = store(() => sessionStorage);
+
+const TIPOS = {
+  ENTRADA: { txt: 'Entrada', cls: 'ent' }, SALIDA: { txt: 'Salida', cls: 'sal' },
+  INICIO_COLACION: { txt: 'Inicio de colación', cls: 'col' }, FIN_COLACION: { txt: 'Fin de colación', cls: 'col' }
+};
+const S = { cfg: null, user: null, ultima: null, semana: null, fix: null, gpsErr: null, watchId: null,
+  obraManual: false, pin: '', pinNom: '', pendTipo: null, demo: !API_URL };
+
+/* ---------- utilidades ---------- */
+const pad = n => String(n).padStart(2, '0');
+const hhmm = t => { const d = new Date(t); return pad(d.getHours()) + ':' + pad(d.getMinutes()); };
+const fDist = m => m == null || m === '' ? '—' : m < 1000 ? Math.round(m) + ' m' : (m / 1000).toFixed(1).replace('.', ',') + ' km';
+const fHoras = h => { const m = Math.round((h || 0) * 60); return Math.floor(m / 60) + ':' + pad(m % 60) + ' h'; };
+const fFechaLarga = t => { const f = new Date(t).toLocaleDateString('es-CL', { weekday: 'long', day: 'numeric', month: 'long' }); return f.charAt(0).toUpperCase() + f.slice(1); };
+const DIAS = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'];
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const uuid = () => (crypto.randomUUID ? crypto.randomUUID() : 'id-' + Date.now().toString(36) + Math.random().toString(36).slice(2));
+function haversine(a, b) {
+  const R = 6371000, r = Math.PI / 180, dLa = (b.lat - a.lat) * r, dLo = (b.lng - a.lng) * r;
+  const x = Math.sin(dLa / 2) ** 2 + Math.cos(a.lat * r) * Math.cos(b.lat * r) * Math.sin(dLo / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(x));
+}
+async function sha(s) {
+  if (!crypto.subtle) return null;
+  const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+  return Array.from(new Uint8Array(b)).map(x => x.toString(16).padStart(2, '0')).join('');
+}
+function obraPorNombre(n) { return (S.cfg && S.cfg.obras || []).find(o => o.nombre === n) || null; }
+function enRadio(fix, o) {
+  if (!fix || !o || o.lat == null) return null;
+  const d = haversine(fix, o);
+  return { d, dentro: d <= o.radio + Math.min(fix.acc || 0, 100) };
+}
+
+let toastT;
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 4200); }
+function busy(on, txt) { $('#ovBusy').hidden = !on; if (txt) $('#busyTxt').textContent = txt; }
+function view(v) { ['vLogin', 'vPin', 'vPanel'].forEach(id => $('#' + id).hidden = id !== v); }
+function confirmar(tit, txt, si) {
+  return new Promise(res => {
+    $('#cTit').textContent = tit; $('#cTxt').textContent = txt; $('#cSi').textContent = si;
+    $('#ovConfirm').hidden = false;
+    $('#cSi').onclick = () => { $('#ovConfirm').hidden = true; res(true); };
+    $('#cNo').onclick = () => { $('#ovConfirm').hidden = true; res(false); };
+  });
+}
+$$('[data-cerrar]').forEach(b => b.onclick = () => b.closest('.ov').hidden = true);
+
+/* ---------- API (Apps Script o demo) ---------- */
+async function api(p) {
+  if (S.demo) return demo.api(p);
+  const r = await fetch(API_URL, { method: 'POST', body: JSON.stringify(p) }); // text/plain: sin preflight CORS
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  return r.json();
+}
+async function apiConfig() {
+  if (S.demo) return demo.config();
+  const r = await fetch(API_URL + '?action=config');
+  return r.json();
+}
+
+/* ---------- arranque ---------- */
+async function boot() {
+  $('#demoBanner').hidden = !S.demo;
+  $('#compartido').checked = LS.get('asis_compartido', false);
+  S.cfg = LS.get('asis_cfg', null);
+  tick(); setInterval(tick, 1000);
+  try { const c = await apiConfig(); if (c && c.ok) { S.cfg = c; LS.set('asis_cfg', c); } } catch (e) {}
+  if (!S.cfg) {
+    $('#vLogin').hidden = false;
+    $('#personas').innerHTML = '<p class="vacio">No hay conexión y este teléfono aún no tiene los datos de la empresa. Conéctate a internet y recarga.</p>';
+    return;
+  }
+  $('#empresa').textContent = S.cfg.empresa || 'LDZ Electricidad';
+  const ses = SS.get('asis_ses', null);
+  if (ses && S.cfg.trabajadores.includes(ses.nombre)) { S.user = ses; aplicarEstado(LS.get('asis_estado_' + ses.nombre, {})); mostrarPanel(); refrescarEstado(); }
+  else mostrarLogin();
+  flushCola(); setInterval(flushCola, 60000);
+  addEventListener('online', flushCola);
+  if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+
+function tick() {
+  const d = new Date();
+  $('#hora').innerHTML = pad(d.getHours()) + ':' + pad(d.getMinutes()) + '<small>:' + pad(d.getSeconds()) + '</small>';
+  $('#fecha').textContent = fFechaLarga(d);
+  if (S.user && d.getSeconds() === 0) renderEstado();
+}
+
+/* ---------- ¿Quién marca? ---------- */
+function mostrarLogin() {
+  S.user = null; SS.del('asis_ses'); pararGps();
+  $('#quien').hidden = true;
+  view('vLogin');
+  renderPersonas();
+}
+function renderPersonas() {
+  const q = $('#buscar').value.trim().toLowerCase();
+  const ult = LS.get('asis_ultimo', '');
+  const ns = (S.cfg.trabajadores || []).filter(n => n.toLowerCase().includes(q))
+    .sort((a, b) => (b === ult) - (a === ult) || a.localeCompare(b, 'es'));
+  $('#personas').innerHTML = ns.length ? ns.map(n => {
+    const ini = n.split(/\s+/).map(p => p[0]).slice(0, 2).join('').toUpperCase();
+    return `<button class="persona" data-n="${esc(n)}"><span class="ini">${esc(ini)}</span><span class="nm">${esc(n)}</span>${n === ult ? '<span class="ult">último en este teléfono</span>' : ''}</button>`;
+  }).join('') : '<p class="vacio">Nadie con ese nombre. Pide que te agreguen en la hoja Trabajadores.</p>';
+}
+$('#buscar').oninput = renderPersonas;
+$('#personas').onclick = e => { const b = e.target.closest('.persona'); if (b) abrirPin(b.dataset.n); };
+$('#compartido').onchange = e => LS.set('asis_compartido', e.target.checked);
+
+function abrirPin(nombre) {
+  S.pinNom = nombre; S.pin = '';
+  $('#pinNom').textContent = nombre; $('#pinErr').textContent = '';
+  renderPin(); view('vPin');
+}
+function renderPin() {
+  const n = Math.max(4, S.pin.length);
+  $('#puntos').innerHTML = Array.from({ length: n }, (_, i) => `<i class="${i < S.pin.length ? 'on' : ''}"></i>`).join('');
+  $('#btnEntrar').disabled = S.pin.length < 4;
+}
+$('#teclado').onclick = e => {
+  const k = e.target.closest('button'); if (!k) return;
+  const v = k.dataset.k;
+  if (v === 'volver') return mostrarLogin();
+  if (v === 'borrar') S.pin = S.pin.slice(0, -1);
+  else if (S.pin.length < 6) S.pin += v;
+  $('#pinErr').textContent = '';
+  renderPin();
+};
+addEventListener('keydown', e => {
+  if ($('#vPin').hidden || !$('#ovBusy').hidden) return;
+  if (/^\d$/.test(e.key) && S.pin.length < 6) { S.pin += e.key; renderPin(); }
+  else if (e.key === 'Backspace') { S.pin = S.pin.slice(0, -1); renderPin(); }
+  else if (e.key === 'Enter' && S.pin.length >= 4) login();
+});
+$('#btnEntrar').onclick = login;
+
+async function login() {
+  const nombre = S.pinNom, pin = S.pin;
+  busy(true, 'Verificando…');
+  try {
+    const r = await api({ action: 'login', trabajador: nombre, pin });
+    busy(false);
+    if (!r.ok) { $('#pinErr').textContent = r.error || 'No se pudo ingresar'; S.pin = ''; renderPin(); return; }
+    const h = await sha(nombre + '|' + pin); if (h) { const m = LS.get('asis_pins', {}); m[nombre] = h; LS.set('asis_pins', m); }
+    entrar(nombre, pin); aplicarEstado(r); renderPanel();
+  } catch (e) {
+    busy(false);
+    const h = await sha(nombre + '|' + pin);
+    if (h && LS.get('asis_pins', {})[nombre] === h) {
+      entrar(nombre, pin); aplicarEstado(LS.get('asis_estado_' + nombre, {})); renderPanel();
+      toast('Sin conexión. Tus marcas se guardan en el teléfono y se envían al volver la señal.');
+    } else {
+      $('#pinErr').textContent = 'Sin conexión. La primera vez en este teléfono necesitas señal para verificar tu PIN.';
+    }
+  }
+}
+function entrar(nombre, pin) {
+  S.user = { nombre, pin }; SS.set('asis_ses', S.user); LS.set('asis_ultimo', nombre);
+  S.obraManual = false;
+  mostrarPanel();
+}
+$('#btnSalirSesion').onclick = mostrarLogin;
+
+/* ---------- Estado del trabajador ---------- */
+function aplicarEstado(r) {
+  if (!r) return;
+  if ('ultima' in r) S.ultima = r.ultima;
+  if (r.semana) S.semana = r.semana;
+  if (S.user) LS.set('asis_estado_' + S.user.nombre, { ultima: S.ultima, semana: S.semana });
+  // Si hay marcas sin enviar, mandan en el estado local
+  const q = LS.get('asis_cola', []).filter(p => S.user && p.trabajador === S.user.nombre);
+  const last = q[q.length - 1];
+  if (last && (!S.ultima || last.tsDispositivo > S.ultima.t)) marcaLocal(last);
+}
+function marcaLocal(p) {
+  const prevEntrada = S.ultima && S.ultima.entradaT;
+  S.ultima = { tipo: p.tipo, obra: p.obra, t: p.tsDispositivo,
+    entradaT: p.tipo === 'ENTRADA' ? p.tsDispositivo : p.tipo === 'SALIDA' ? null : prevEntrada };
+}
+async function refrescarEstado() {
+  if (!S.user) return;
+  try { const r = await api({ action: 'login', trabajador: S.user.nombre, pin: S.user.pin }); if (r.ok) { aplicarEstado(r); renderPanel(); } else if (r.codigo === 'pin') mostrarLogin(); } catch (e) {}
+}
+function estadoActual() {
+  const u = S.ultima;
+  if (!u || Date.now() - u.t > 16 * 3600e3) return { k: 'fuera' };
+  if (u.tipo === 'ENTRADA' || u.tipo === 'FIN_COLACION') return { k: 'turno', obra: u.obra, desde: u.entradaT || u.t };
+  if (u.tipo === 'INICIO_COLACION') return { k: 'colacion', obra: u.obra, desde: u.t, entrada: u.entradaT };
+  return { k: 'fuera', ultimaSalida: u.t };
+}
+function obraActual() { const e = estadoActual(); return e.k === 'fuera' ? $('#obra').value : e.obra; }
+
+/* ---------- Panel ---------- */
+function mostrarPanel() {
+  $('#quien').hidden = false; $('#quienNom').textContent = S.user.nombre;
+  view('vPanel');
+  renderPanel();
+  iniciarGps();
+}
+function renderPanel() {
+  if (!S.user) return;
+  const e = estadoActual();
+  const sel = $('#obra');
+  const obras = S.cfg.obras || [];
+  const actual = e.k === 'fuera' ? sel.value : e.obra;
+  sel.innerHTML = '<option value="">Elige la obra…</option>' + obras.map(o => `<option>${esc(o.nombre)}</option>`).join('')
+    + (actual && !obraPorNombre(actual) ? `<option>${esc(actual)}</option>` : '');
+  sel.value = actual || '';
+  sel.disabled = e.k !== 'fuera';
+  const vis = { ENTRADA: e.k === 'fuera', INICIO_COLACION: e.k === 'turno', FIN_COLACION: e.k === 'colacion', SALIDA: e.k !== 'fuera' };
+  $$('#acciones .bm').forEach(b => { b.hidden = !vis[b.dataset.t]; b.classList.remove('confirmar'); });
+  $('#filaCol').hidden = e.k !== 'turno';
+  renderEstado(); renderGps(); renderSemana(); renderPend();
+}
+function renderEstado() {
+  const e = estadoActual(), el = $('#estado');
+  el.className = 'estado ' + e.k;
+  if (e.k === 'turno') el.textContent = `En turno desde ${hhmm(e.desde)} · ${fHoras((Date.now() - e.desde) / 36e5)}`;
+  else if (e.k === 'colacion') el.textContent = `En colación desde ${hhmm(e.desde)}`;
+  else el.textContent = e.ultimaSalida ? `Fuera de turno · última salida ${hhmm(e.ultimaSalida)}` : 'Fuera de turno';
+}
+$('#obra').onchange = () => { S.obraManual = true; renderGps(); };
+
+/* ---------- GPS ---------- */
+function iniciarGps() {
+  if (!('geolocation' in navigator)) { S.gpsErr = 'nodisp'; renderGps(); return; }
+  if (S.watchId != null) return;
+  S.watchId = navigator.geolocation.watchPosition(p => {
+    S.fix = { lat: p.coords.latitude, lng: p.coords.longitude, acc: p.coords.accuracy, t: Date.now() };
+    S.gpsErr = null; autoObra(); renderGps();
+  }, err => { S.gpsErr = err.code === 1 ? 'denegado' : 'nodisp'; renderGps(); },
+  { enableHighAccuracy: true, maximumAge: 10000, timeout: 30000 });
+}
+function pararGps() { if (S.watchId != null) navigator.geolocation.clearWatch(S.watchId); S.watchId = null; }
+function getFix(fresco) {
+  return new Promise((res, rej) => {
+    if (!fresco && S.fix && Date.now() - S.fix.t < 20000 && S.fix.acc < 500) return res(S.fix);
+    if (!('geolocation' in navigator)) return rej({ code: 2 });
+    navigator.geolocation.getCurrentPosition(p => {
+      S.fix = { lat: p.coords.latitude, lng: p.coords.longitude, acc: p.coords.accuracy, t: Date.now() };
+      res(S.fix);
+    }, rej, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
+  });
+}
+function autoObra() {
+  // Sugiere la obra más cercana si estás dentro de su radio (solo antes de entrar y si no elegiste a mano)
+  if (S.obraManual || estadoActual().k !== 'fuera' || !S.fix) return;
+  let mejor = null;
+  (S.cfg.obras || []).forEach(o => { const r = enRadio(S.fix, o); if (r && r.dentro && (!mejor || r.d < mejor.d)) mejor = { o, d: r.d }; });
+  if (mejor && $('#obra').value !== mejor.o.nombre) $('#obra').value = mejor.o.nombre;
+}
+function gpsHtml(el, o) {
+  let cls = '', txt = '', pulso = false;
+  if (S.gpsErr === 'denegado') { cls = 'mal'; txt = '<b>Ubicación bloqueada.</b> Sin ubicación no puedes marcar entrada ni salida. Actívala en los permisos del navegador para este sitio y recarga la página.'; }
+  else if (!S.fix) { pulso = true; txt = S.gpsErr === 'nodisp' ? 'No se logra señal GPS. Sal a un lugar abierto y activa la ubicación del teléfono.' : 'Buscando señal GPS…'; }
+  else {
+    const acc = `precisión ±${Math.round(S.fix.acc)} m`;
+    const r = enRadio(S.fix, o);
+    if (!o) { cls = ''; txt = 'Ubicación lista · ' + acc; }
+    else if (!r) { cls = 'aviso'; txt = `Esta obra no tiene ubicación registrada · ${acc}`; }
+    else if (r.dentro) { cls = 'ok'; txt = `Estás en la obra (a ${fDist(r.d)}) · ${acc}`; }
+    else { cls = 'aviso'; txt = `Estás a ${fDist(r.d)} de la obra (radio ${o.radio} m) · ${acc}`; }
+  }
+  el.className = 'gps ' + cls;
+  el.innerHTML = `<span class="ico${pulso ? ' pulso' : ''}"></span><span>${txt}</span>`;
+}
+function renderGps() {
+  gpsHtml($('#gps'), obraPorNombre(obraActual()));
+  if (!$('#ovAdmin').hidden) gpsHtml($('#adGps'), null);
+}
+
+/* ---------- Marcar ---------- */
+$('#acciones').onclick = e => {
+  const b = e.target.closest('.bm'); if (!b) return;
+  const tipo = b.dataset.t;
+  if (!obraActual()) { toast('Elige la obra antes de marcar.'); $('#obra').focus(); return; }
+  if (tipo === 'SALIDA' && !b.classList.contains('confirmar')) {
+    b.classList.add('confirmar'); b.lastChild.textContent = 'Toca otra vez para confirmar';
+    setTimeout(() => { b.classList.remove('confirmar'); b.lastChild.textContent = 'Marcar salida'; }, 3500);
+    return;
+  }
+  b.classList.remove('confirmar'); if (tipo === 'SALIDA') b.lastChild.textContent = 'Marcar salida';
+  const s = (S.cfg.selfie || 'NO').toUpperCase();
+  if (s === 'SIEMPRE' || (s === 'ENTRADA' && tipo === 'ENTRADA')) { S.pendTipo = tipo; $('#selfie').value = ''; $('#selfie').click(); return; }
+  marcar(tipo, null);
+};
+$('#selfie').onchange = async e => {
+  const f = e.target.files[0], tipo = S.pendTipo; S.pendTipo = null;
+  if (!f || !tipo) return;
+  busy(true, 'Procesando foto…');
+  let foto = null; try { foto = await comprimirFoto(f, tipo); } catch (err) {}
+  busy(false);
+  if (!foto) { toast('No se pudo leer la foto. Intenta de nuevo.'); return; }
+  marcar(tipo, foto);
+};
+function comprimirFoto(file, tipo) {
+  return new Promise((res, rej) => {
+    const url = URL.createObjectURL(file), img = new Image();
+    img.onload = () => {
+      const k = Math.min(1, 720 / Math.max(img.width, img.height));
+      const w = Math.round(img.width * k), h = Math.round(img.height * k);
+      const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+      const g = cv.getContext('2d'); g.drawImage(img, 0, 0, w, h);
+      // Sello con nombre, tipo y hora: evita reutilizar una foto antigua
+      g.fillStyle = 'rgba(0,0,0,.6)'; g.fillRect(0, h - 36, w, 36);
+      g.fillStyle = '#fff'; g.font = '600 15px sans-serif';
+      g.fillText(`${S.user.nombre} · ${TIPOS[tipo].txt} · ${new Date().toLocaleString('es-CL')}`, 10, h - 13, w - 20);
+      URL.revokeObjectURL(url); res(cv.toDataURL('image/jpeg', 0.72));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); rej(); };
+    img.src = url;
+  });
+}
+
+async function obtenerUbicacion(tipo) {
+  busy(true, 'Obteniendo ubicación…');
+  try { return await getFix(); }
+  catch (err) {
+    busy(false);
+    if (tipo === 'ENTRADA' || tipo === 'SALIDA') {
+      if (err && err.code === 1) { S.gpsErr = 'denegado'; renderGps(); toast('Activa la ubicación para este sitio: sin ella no se puede marcar.'); }
+      else toast('No se obtuvo tu ubicación. Sal a un lugar abierto e intenta de nuevo.');
+      return false;
+    }
+    return null; // la colación se puede marcar sin GPS
+  }
+}
+
+async function marcar(tipo, foto) {
+  const obra = obraActual();
+  const fix = await obtenerUbicacion(tipo);
+  if (fix === false) return;
+  const r = enRadio(fix, obraPorNombre(obra));
+  if ((tipo === 'ENTRADA' || tipo === 'SALIDA') && r && !r.dentro) {
+    busy(false);
+    const ok = await confirmar('Estás fuera de la obra', `Tu ubicación está a ${fDist(r.d)} de ${obra}. Puedes marcar igual, pero la marca quedará para revisión.`, 'Marcar igual');
+    if (!ok) return;
+  }
+  const p = { action: 'marcar', id: uuid(), trabajador: S.user.nombre, pin: S.user.pin, obra, tipo,
+    lat: fix ? fix.lat : null, lng: fix ? fix.lng : null, acc: fix ? fix.acc : null,
+    tsDispositivo: Date.now(), ua: navigator.userAgent, foto };
+  const res = await enviar(p);
+  busy(false);
+  if (res.error) { await confirmar('No se registró la marca', res.error, 'Entendido'); return; }
+  recibo(p, res);
+}
+
+async function enviar(p) {
+  busy(true, 'Enviando marca…');
+  try {
+    const r = await api(p);
+    if (!r.ok) { if (r.codigo === 'pin') setTimeout(mostrarLogin, 100); return { error: r.error || 'El servidor rechazó la marca.' }; }
+    aplicarEstado(r);
+    return { res: r };
+  } catch (e) {
+    // Sin señal: se guarda en el teléfono y se envía después con la hora real de la marca
+    const q = LS.get('asis_cola', []);
+    let item = Object.assign({}, p, { offline: true });
+    q.push(item);
+    if (!LS.set('asis_cola', q)) { q[q.length - 1] = item = Object.assign({}, item, { foto: null, fotoPerdida: !!p.foto }); LS.set('asis_cola', q); }
+    marcaLocal(p);
+    if (S.user) LS.set('asis_estado_' + S.user.nombre, { ultima: S.ultima, semana: S.semana });
+    return { pendiente: true };
+  }
+}
+
+function recibo(p, res, nota) {
+  const t = TIPOS[p.tipo];
+  const r = res.res || {};
+  $('#rCab').className = 'cab ' + t.cls;
+  $('#rTipo').textContent = t.txt;
+  $('#rHora').textContent = hhmm(r.hora || p.tsDispositivo);
+  $('#rFecha').textContent = fFechaLarga(r.hora || p.tsDispositivo);
+  $('#rNom').textContent = p.trabajador;
+  $('#rObra').textContent = p.obra;
+  const o = obraPorNombre(p.obra);
+  let ubi = 'Sin GPS', aviso = '';
+  if (p.lat != null) {
+    const er = enRadio(p, o);
+    const dist = r.dist !== undefined && r.dist !== '' ? r.dist : er ? er.d : null;
+    const dentro = r.dentro ? r.dentro === 'SI' : er ? er.dentro : null;
+    ubi = `${p.lat.toFixed(5)}, ${p.lng.toFixed(5)} (±${Math.round(p.acc)} m)`;
+    if (dentro === true) ubi += ` · en la obra, a ${fDist(dist)}`;
+    else if (dentro === false) { ubi += ` · a ${fDist(dist)} de la obra`; aviso = 'Marca fuera del radio de la obra: quedará para revisión.'; }
+  }
+  $('#rUbi').textContent = ubi;
+  $('#rCod').textContent = res.pendiente ? 'pendiente' : (r.codigo || '—');
+  const n = $('#rNota');
+  const textos = [nota, res.pendiente ? 'Sin señal: la marca quedó guardada en el teléfono con esta hora y se enviará sola al volver la conexión.' : '', aviso].filter(Boolean);
+  n.hidden = !textos.length; n.className = 'nota aviso'; n.textContent = textos.join(' ');
+  $('#ovRecibo').hidden = false;
+  $('#btnListo').focus();
+  renderPanel();
+}
+$('#btnListo').onclick = () => {
+  $('#ovRecibo').hidden = true;
+  if ($('#compartido').checked) mostrarLogin(); else renderPanel();
+};
+
+/* ---------- Cambio de obra ---------- */
+$('#btnCambio').onclick = () => {
+  const e = estadoActual();
+  $('#cbDesde').textContent = e.obra;
+  $('#cbObra').innerHTML = '<option value="">Elige la obra…</option>' + (S.cfg.obras || []).filter(o => o.nombre !== e.obra).map(o => `<option>${esc(o.nombre)}</option>`).join('');
+  let mejor = null;
+  (S.cfg.obras || []).filter(o => o.nombre !== e.obra).forEach(o => { const r = enRadio(S.fix, o); if (r && r.dentro && (!mejor || r.d < mejor.d)) mejor = { o, d: r.d }; });
+  if (mejor) $('#cbObra').value = mejor.o.nombre;
+  $('#ovCambio').hidden = false;
+};
+$('#cbOk').onclick = async () => {
+  const nueva = $('#cbObra').value, antes = estadoActual().obra;
+  if (!nueva) { toast('Elige la nueva obra.'); return; }
+  $('#ovCambio').hidden = true;
+  const fix = await obtenerUbicacion('ENTRADA');
+  if (fix === false) return;
+  const base = { action: 'marcar', trabajador: S.user.nombre, pin: S.user.pin, lat: fix.lat, lng: fix.lng, acc: fix.acc, ua: navigator.userAgent, foto: null };
+  const t0 = Date.now();
+  const p1 = Object.assign({}, base, { id: uuid(), obra: antes, tipo: 'SALIDA', tsDispositivo: t0 });
+  const r1 = await enviar(p1);
+  if (r1.error) { busy(false); await confirmar('No se registró el cambio', r1.error, 'Entendido'); return; }
+  const p2 = Object.assign({}, base, { id: uuid(), obra: nueva, tipo: 'ENTRADA', tsDispositivo: t0 + 1000 });
+  const r2 = await enviar(p2);
+  busy(false);
+  if (r2.error) { await confirmar('Se marcó la salida, pero no la entrada', r2.error + ' Marca la entrada manualmente.', 'Entendido'); renderPanel(); return; }
+  recibo(p2, r2, `Salida de ${antes} registrada a la misma hora.`);
+};
+
+/* ---------- Mis horas ---------- */
+function renderSemana() {
+  const s = S.semana, ul = $('#tramos');
+  if (!s || !s.tramos || !s.tramos.length) {
+    ul.innerHTML = '<li class="vacio">Aún no hay jornadas registradas esta semana.</li>';
+    $('#semTotal').textContent = ''; $('#barra').hidden = true; return;
+  }
+  const J = s.jornada || S.cfg.jornadaSemanal || 42;
+  $('#semTotal').textContent = `${fHoras(s.total)} / ${J} h`;
+  $('#barra').hidden = false;
+  const bo = $('#barraOrd');
+  bo.style.width = Math.min(100, (s.total / J) * 100) + '%';
+  bo.className = s.total > J ? 'he' : '';
+  ul.innerHTML = s.tramos.slice().reverse().map(x => {
+    const [y, m, d] = x.fecha.split('-').map(Number);
+    const f = new Date(y, m - 1, d);
+    const curso = x.estado === 'EN CURSO';
+    return `<li class="tramo">
+      <div class="dia"><b>${DIAS[f.getDay()]}</b><span>${pad(d)}</span></div>
+      <div><div class="ob">${esc(x.obra)}</div>
+        <div class="hr mono">${x.entrada || '—'} → ${x.salida || (curso ? 'en curso' : '—')}${x.colMin ? ` · colación ${x.colMin} min` : ''}</div>
+        ${x.alertas ? `<div class="al">${esc(x.alertas)}</div>` : ''}</div>
+      <div class="nt">${curso ? '—' : fHoras(x.netas)}</div></li>`;
+  }).join('') + (s.he > 0 ? `<li class="tramo"><div></div><div class="hr">Horas sobre la jornada semanal</div><div class="nt">${fHoras(s.he)}</div></li>` : '');
+}
+
+/* ---------- Cola sin señal ---------- */
+function renderPend() {
+  const q = LS.get('asis_cola', []);
+  $('#pend').hidden = !q.length;
+  $('#pendTxt').textContent = q.length === 1 ? '1 marca guardada sin señal, pendiente de envío' : `${q.length} marcas guardadas sin señal, pendientes de envío`;
+}
+$('#btnReintentar').onclick = () => flushCola(true);
+let enviando = false;
+async function flushCola(manual) {
+  const q = LS.get('asis_cola', []);
+  if (!q.length || enviando) { renderPend(); return; }
+  enviando = true;
+  const resto = []; let hayRed = true, enviadas = 0;
+  for (const p of q) {
+    if (!hayRed) { resto.push(p); continue; }
+    try {
+      const r = await api(p);
+      if (r.ok) { enviadas++; }
+      else {
+        const rech = LS.get('asis_rechazadas', []); rech.push({ p: Object.assign({}, p, { foto: null, pin: null }), error: r.error }); LS.set('asis_rechazadas', rech);
+        toast(`Una marca de ${p.trabajador} (${hhmm(p.tsDispositivo)}) fue rechazada: ${r.error}`);
+      }
+    } catch (e) { hayRed = false; resto.push(p); }
+  }
+  LS.set('asis_cola', resto);
+  enviando = false;
+  if (enviadas) { toast(enviadas === 1 ? 'Se envió 1 marca pendiente.' : `Se enviaron ${enviadas} marcas pendientes.`); refrescarEstado(); }
+  else if (manual && !hayRed) toast('Todavía sin conexión. Se reintentará automáticamente.');
+  renderPend();
+}
+
+/* ---------- Administrador: ubicación de obra ---------- */
+$('#btnAdmin').onclick = () => {
+  $('#adObra').innerHTML = '<option value="">Elige la obra…</option>' + (S.cfg && S.cfg.obras || []).map(o => `<option>${esc(o.nombre)}${o.lat == null ? ' (sin ubicación)' : ''}</option>`).join('');
+  $('#adObra').querySelectorAll('option').forEach((op, i) => { if (i) op.value = S.cfg.obras[i - 1].nombre; });
+  $('#adPin').value = '';
+  $('#ovAdmin').hidden = false;
+  iniciarGps(); renderGps();
+};
+$('#adOk').onclick = async () => {
+  const obra = $('#adObra').value, pin = $('#adPin').value;
+  if (!obra || !pin) { toast('Elige la obra e ingresa el PIN de administrador.'); return; }
+  busy(true, 'Obteniendo ubicación precisa…');
+  let fix;
+  try { fix = await getFix(true); } catch (e) { busy(false); toast('No se obtuvo la ubicación. Intenta al aire libre.'); return; }
+  if (fix.acc > 60) {
+    busy(false);
+    if (!await confirmar('Señal GPS débil', `La precisión es de ±${Math.round(fix.acc)} m. Lo ideal es menos de 30 m. ¿Guardar igual?`, 'Guardar igual')) return;
+  }
+  busy(true, 'Guardando…');
+  try {
+    const r = await api({ action: 'ubicarObra', adminPin: pin, obra, lat: fix.lat, lng: fix.lng, acc: fix.acc });
+    busy(false);
+    if (!r.ok) { toast(r.error || 'No se pudo guardar.'); return; }
+    const o = obraPorNombre(obra); o.lat = fix.lat; o.lng = fix.lng; o.radio = o.radio || 300;
+    LS.set('asis_cfg', S.cfg);
+    $('#ovAdmin').hidden = true;
+    toast(`Ubicación de ${obra} guardada (±${Math.round(fix.acc)} m).`);
+    renderGps();
+    if (!S.user) pararGps();
+  } catch (e) { busy(false); toast('Sin conexión. Intenta de nuevo con señal.'); }
+};
+
+/* ================================================================
+   MODO DEMOSTRACIÓN (solo si API_URL está vacía)
+   ================================================================ */
+const demo = {
+  base: { ok: true, empresa: 'LDZ Electricidad', selfie: 'NO', jornadaSemanal: 42,
+    trabajadores: ['Prueba Uno', 'Prueba Dos'],
+    obras: [
+      { nombre: 'Obra demo Lo Barnechea', lat: -33.3527, lng: -70.5183, radio: 300 },
+      { nombre: 'Obra demo Chicureo', lat: -33.2833, lng: -70.6452, radio: 300 },
+      { nombre: 'Bodega', lat: null, lng: null, radio: 300 }
+    ] },
+  config() { this._cfg = this._cfg || LS.get('asis_demo_cfg', null) || this.base; return Promise.resolve(this._cfg); },
+  marcas() {
+    let ms = this._ms || LS.get('asis_demo_marcas', null);
+    if (!ms) { // jornadas de ejemplo en los días anteriores de esta semana
+      ms = []; const hoy = new Date(); const dow = (hoy.getDay() + 6) % 7;
+      for (let i = dow; i >= 1; i--) {
+        const d = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() - i);
+        const at = (h, m) => new Date(d.getFullYear(), d.getMonth(), d.getDate(), h, m).getTime();
+        const obra = i % 2 ? 'Obra demo Lo Barnechea' : 'Obra demo Chicureo';
+        ms.push({ trabajador: 'Prueba Uno', obra, tipo: 'ENTRADA', t: at(8, 2 + i) }, { trabajador: 'Prueba Uno', obra, tipo: 'INICIO_COLACION', t: at(13, 5) },
+          { trabajador: 'Prueba Uno', obra, tipo: 'FIN_COLACION', t: at(13, 48) }, { trabajador: 'Prueba Uno', obra, tipo: 'SALIDA', t: at(17, 30 + i) });
+      }
+      LS.set('asis_demo_marcas', ms);
+    }
+    return (this._ms = ms);
+  },
+  estado(nombre) {
+    const ms = this.marcas().filter(m => m.trabajador === nombre).sort((a, b) => a.t - b.t);
+    const tr = []; let cur = null;
+    for (const m of ms) {
+      if (m.tipo === 'ENTRADA') { if (cur) tr.push(cur); cur = { obra: m.obra, entrada: m.t, salida: null, col: 0, colIni: null }; }
+      else if (!cur) continue;
+      else if (m.tipo === 'INICIO_COLACION') cur.colIni = m.t;
+      else if (m.tipo === 'FIN_COLACION' && cur.colIni) { cur.col += m.t - cur.colIni; cur.colIni = null; }
+      else if (m.tipo === 'SALIDA') { cur.salida = m.t; tr.push(cur); cur = null; }
+    }
+    const abierta = cur; if (cur) tr.push(cur);
+    const h = new Date(); const lunes = new Date(h.getFullYear(), h.getMonth(), h.getDate() - (h.getDay() + 6) % 7).getTime();
+    const tramos = tr.filter(x => x.entrada >= lunes).map(x => {
+      const netas = x.salida ? Math.max(0, (x.salida - x.entrada - x.col) / 36e5) : 0;
+      const d = new Date(x.entrada);
+      return { fecha: `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`, obra: x.obra, entrada: hhmm(x.entrada),
+        salida: x.salida ? hhmm(x.salida) : '', netas, colMin: Math.round(x.col / 6e4), estado: x.salida ? 'OK' : 'EN CURSO', alertas: '' };
+    });
+    const total = tramos.reduce((a, x) => a + x.netas, 0);
+    const u = ms[ms.length - 1];
+    return { ultima: u ? { tipo: u.tipo, obra: u.obra, t: u.t, entradaT: abierta ? abierta.entrada : null } : null,
+      semana: { jornada: 42, total, he: Math.max(0, total - 42), tramos } };
+  },
+  async api(p) {
+    await new Promise(r => setTimeout(r, 450));
+    const cfg = await this.config();
+    if (p.action === 'ubicarObra') {
+      if (p.adminPin !== '9999') return { ok: false, error: 'PIN de administrador incorrecto (en la demo es 9999)' };
+      const o = cfg.obras.find(x => x.nombre === p.obra); o.lat = p.lat; o.lng = p.lng; LS.set('asis_demo_cfg', cfg);
+      return { ok: true };
+    }
+    if (!cfg.trabajadores.includes(p.trabajador) || p.pin !== '1234') return { ok: false, error: 'PIN incorrecto (en la demo es 1234)', codigo: 'pin' };
+    if (p.action === 'login') return Object.assign({ ok: true }, this.estado(p.trabajador));
+    if (p.action === 'marcar') {
+      const ms = this.marcas();
+      const t = p.offline ? p.tsDispositivo : Date.now();
+      ms.push({ trabajador: p.trabajador, obra: p.obra, tipo: p.tipo, t }); LS.set('asis_demo_marcas', ms);
+      const o = cfg.obras.find(x => x.nombre === p.obra);
+      const r = p.lat != null ? enRadio(p, o) : null;
+      const codigo = ((await sha(p.id + t)) || uuid().replace(/-/g, '')).slice(0, 10).toUpperCase();
+      return Object.assign({ ok: true, id: p.id, codigo, hora: t, dist: r ? Math.round(r.d) : '', dentro: r ? (r.dentro ? 'SI' : 'NO') : '' }, this.estado(p.trabajador));
+    }
+    return { ok: false, error: 'Acción desconocida' };
+  }
+};
+
+boot();
+</script>
+</body>
+</html>
