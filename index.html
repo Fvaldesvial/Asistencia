@@ -165,6 +165,32 @@ select:disabled{opacity:1;color:var(--ink);background-image:none}
 .recibo .nota.aviso{background:var(--warn-bg);color:var(--warn)}
 .recibo .nota.pend{background:var(--warn-bg);color:var(--warn)}
 .recibo .pie-r{padding:16px 20px 20px}
+/* Marcas a mano (administrador) */
+.btn-admin{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:12px 14px;border:1px dashed var(--muted);border-radius:12px;background:transparent}
+.btn-admin svg{width:22px;height:22px;flex:none;color:var(--muted)}
+.btn-admin b{display:block;font-weight:600}
+.btn-admin span{font-size:13px;color:var(--muted)}
+.man{padding:18px;display:flex;flex-direction:column;gap:16px}
+.man-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.man .sub{margin:0;color:var(--muted);font-size:14px}
+.man .col{display:flex;flex-direction:column;gap:16px}
+.man input[type=date],.man input[type=time],.man input[type=text],.man input[type=password]{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--surface2);color:var(--ink);font:500 17px var(--f-body)}
+.man input[type=time],.man input[type=password]{font-family:var(--f-mono)}
+.checks{display:flex;flex-direction:column;gap:2px;max-height:260px;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:4px;background:var(--surface2)}
+.campo .checks label{display:flex;align-items:center;gap:12px;padding:10px;border-radius:8px;margin:0;font:500 16px var(--f-body);text-transform:none;letter-spacing:0;color:var(--ink);cursor:pointer}
+.campo .checks label:has(input:checked){background:var(--surface)}
+.checks input{width:20px;height:20px;margin:0;accent-color:var(--ent)}
+.campo-top{display:flex;justify-content:space-between;align-items:baseline}
+.horas{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.campo .hcampo{display:flex;flex-direction:column;gap:6px;margin:0;font:600 13px var(--f-body);text-transform:none;letter-spacing:0;color:var(--ink)}
+.hcampo span{display:flex;align-items:center;gap:6px}
+.hcampo span::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.hcampo.ent span::before{background:var(--ent)}.hcampo.col span::before{background:var(--col)}.hcampo.sal span::before{background:var(--sal)}
+.resumen{margin:0;padding:12px 14px;border-radius:10px;background:var(--surface2);font-size:14px}
+.resumen.err{background:var(--warn-bg);color:var(--warn)}
+.res-lista{list-style:none;margin:0;padding:0;font-size:14px}
+.res-lista li{display:grid;grid-template-columns:1fr auto;gap:2px 12px;padding:8px 0;border-top:1px solid var(--line)}
+.res-lista .cod{font:600 13px var(--f-mono);letter-spacing:.06em;color:var(--muted)}
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:12px 16px;border-radius:12px;font-size:14px;z-index:40;max-width:calc(100% - 32px);box-shadow:var(--shadow)}
 </style>
 </head>
@@ -186,6 +212,10 @@ select:disabled{opacity:1;color:var(--ink);background-image:none}
   <!-- 1. ¿Quién marca? -->
   <section id="vLogin" hidden>
     <div style="display:flex;flex-direction:column;gap:12px">
+      <button class="btn-admin" id="btnManual">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>
+        <div><b>Ingresar marcas a mano</b><span>Administrador · para personas sin celular</span></div>
+      </button>
       <h2>¿Quién marca?</h2>
       <input class="buscar" id="buscar" type="search" placeholder="Buscar nombre" autocomplete="off">
       <div class="personas" id="personas"></div>
@@ -245,6 +275,41 @@ select:disabled{opacity:1;color:var(--ink);background-image:none}
     </div>
   </section>
 
+  <!-- 4. Marcas a mano (administrador) -->
+  <section id="vManual" hidden>
+    <div class="card man">
+      <div class="man-head"><h2>Marcas a mano</h2><button class="link" id="manVolver">Volver</button></div>
+      <div id="manPinBox" class="col">
+        <p class="sub">Para registrar la asistencia de personas sin celular. Las marcas quedan como ingresadas por administrador, con el motivo, para la auditoría.</p>
+        <div class="campo"><label for="manPin">PIN de administrador</label><input id="manPin" type="password" inputmode="numeric" autocomplete="off"></div>
+        <button class="btn acc" id="manPinOk">Continuar</button>
+      </div>
+      <form id="manForm" class="col" hidden novalidate>
+        <div class="campo">
+          <div class="campo-top"><label>Personas</label><button type="button" class="link" id="manTodos">Elegir todos</button></div>
+          <div class="checks" id="manTrab"></div>
+        </div>
+        <div class="campo"><label for="manObra">Obra</label><select id="manObra"></select></div>
+        <div class="campo"><label for="manFecha">Fecha</label><input id="manFecha" type="date"></div>
+        <div class="campo">
+          <label>Horas · deja en blanco las que no correspondan</label>
+          <div class="horas">
+            <label class="hcampo ent"><span>Entrada</span><input type="time" id="hENTRADA"></label>
+            <label class="hcampo sal"><span>Salida</span><input type="time" id="hSALIDA"></label>
+            <label class="hcampo col"><span>Inicio colación</span><input type="time" id="hINICIO_COLACION"></label>
+            <label class="hcampo col"><span>Fin colación</span><input type="time" id="hFIN_COLACION"></label>
+          </div>
+        </div>
+        <div class="campo"><label for="manMotivo">Motivo</label>
+          <select id="manMotivo"><option>No tiene celular</option><option>Celular sin batería o dañado</option><option>Olvidó marcar</option><option>Corrección de marca</option><option value="otro">Otro…</option></select>
+          <input id="manMotivoTxt" type="text" placeholder="Describe el motivo" style="margin-top:8px" hidden>
+        </div>
+        <p class="resumen" id="manResumen" aria-live="polite"></p>
+        <button class="btn acc" id="manOk" type="submit">Registrar marcas</button>
+      </form>
+    </div>
+  </section>
+
   <div class="pie">
     <button class="link" id="btnAdmin">Fijar ubicación de una obra</button>
   </div>
@@ -296,6 +361,16 @@ select:disabled{opacity:1;color:var(--ink);background-image:none}
     <div class="gps" id="adGps"><span class="ico pulso"></span><span>Buscando señal GPS…</span></div>
     <button class="btn acc" id="adOk">Guardar ubicación</button>
     <button class="btn sec" data-cerrar>Cancelar</button>
+  </div>
+</div>
+
+<div class="ov" id="ovManRes" hidden>
+  <div class="hoja" role="dialog" aria-labelledby="mrTit">
+    <h3 id="mrTit"></h3>
+    <p id="mrSub" style="color:var(--muted)"></p>
+    <ul class="res-lista" id="mrLista"></ul>
+    <button class="btn acc" id="mrOtra">Ingresar otra</button>
+    <button class="btn sec" id="mrFin">Terminar</button>
   </div>
 </div>
 
@@ -353,7 +428,7 @@ function enRadio(fix, o) {
 let toastT;
 function toast(msg) { const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 4200); }
 function busy(on, txt) { $('#ovBusy').hidden = !on; if (txt) $('#busyTxt').textContent = txt; }
-function view(v) { ['vLogin', 'vPin', 'vPanel'].forEach(id => $('#' + id).hidden = id !== v); }
+function view(v) { ['vLogin', 'vPin', 'vPanel', 'vManual'].forEach(id => $('#' + id).hidden = id !== v); }
 function confirmar(tit, txt, si) {
   return new Promise(res => {
     $('#cTit').textContent = tit; $('#cTxt').textContent = txt; $('#cSi').textContent = si;
@@ -833,6 +908,130 @@ $('#adOk').onclick = async () => {
   } catch (e) { busy(false); toast('Sin conexión. Intenta de nuevo con señal.'); }
 };
 
+/* ---------- Administrador: marcas a mano ---------- */
+const ORDEN_MARCAS = ['ENTRADA', 'INICIO_COLACION', 'FIN_COLACION', 'SALIDA'];
+const MAN = { pin: SS.get('asis_admin', null), lote: null };
+const ymdHoy = () => { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; };
+
+$('#btnManual').onclick = () => {
+  view('vManual');
+  if (MAN.pin) return manForm();
+  $('#manPinBox').hidden = false; $('#manForm').hidden = true;
+  $('#manPin').value = ''; $('#manPin').focus();
+};
+$('#manVolver').onclick = () => { pararGps(); mostrarLogin(); };
+$('#manPin').onkeydown = e => { if (e.key === 'Enter') $('#manPinOk').click(); };
+$('#manPinOk').onclick = async () => {
+  const pin = $('#manPin').value.trim();
+  if (!pin) { toast('Ingresa el PIN de administrador.'); return; }
+  busy(true, 'Verificando…');
+  try {
+    const r = await api({ action: 'marcaAdmin', adminPin: pin, soloVerificar: true });
+    busy(false);
+    if (!r.ok) { toast(r.error || 'PIN incorrecto'); $('#manPin').value = ''; return; }
+    MAN.pin = pin; SS.set('asis_admin', pin);
+    manForm();
+  } catch (e) { busy(false); toast('Sin conexión. Las marcas a mano necesitan señal.'); }
+};
+
+function manForm() {
+  $('#manPinBox').hidden = true; $('#manForm').hidden = false;
+  const elegidos = $$('#manTrab input:checked').map(i => i.value);
+  $('#manTrab').innerHTML = (S.cfg.trabajadores || []).map((n, i) =>
+    `<label><input type="checkbox" value="${esc(n)}" id="mt${i}"${elegidos.includes(n) ? ' checked' : ''}>${esc(n)}</label>`).join('');
+  const obra = $('#manObra').value;
+  $('#manObra').innerHTML = '<option value="">Elige la obra…</option>' + (S.cfg.obras || []).map(o => `<option>${esc(o.nombre)}</option>`).join('');
+  $('#manObra').value = obra;
+  if (!$('#manFecha').value) $('#manFecha').value = ymdHoy();
+  $('#manFecha').max = ymdHoy();
+  iniciarGps(); // la ubicación de quien ingresa queda en la nota, como respaldo
+  manResumen();
+}
+$('#manTodos').onclick = () => {
+  const cs = $$('#manTrab input'); const todos = cs.every(c => c.checked);
+  cs.forEach(c => c.checked = !todos); MAN.lote = null; manResumen();
+};
+$('#manMotivo').onchange = () => { $('#manMotivoTxt').hidden = $('#manMotivo').value !== 'otro'; manResumen(); };
+$('#manForm').addEventListener('input', () => { MAN.lote = null; manResumen(); });
+$('#manForm').addEventListener('change', () => { MAN.lote = null; manResumen(); });
+
+function manLeer() {
+  const r = { nombres: $$('#manTrab input:checked').map(i => i.value), obra: $('#manObra').value, fecha: $('#manFecha').value, ms: [], nota: '' };
+  r.motivo = $('#manMotivo').value === 'otro' ? $('#manMotivoTxt').value.trim() : $('#manMotivo').value;
+  if (!r.nombres.length) return Object.assign(r, { err: 'Elige al menos una persona.' });
+  if (!r.obra) return Object.assign(r, { err: 'Elige la obra.' });
+  if (!r.fecha) return Object.assign(r, { err: 'Elige la fecha.' });
+  const [y, m, d] = r.fecha.split('-').map(Number);
+  let prev = null;
+  for (const tipo of ORDEN_MARCAS) {
+    const v = $('#h' + tipo).value; if (!v) continue;
+    const [hh, mm] = v.split(':').map(Number);
+    let ts = new Date(y, m - 1, d, hh, mm).getTime();
+    while (prev != null && ts <= prev) { ts += 864e5; r.nota = 'Turno nocturno: las horas después de medianoche quedan en el día siguiente.'; }
+    r.ms.push({ tipo, ts }); prev = ts;
+  }
+  const tiene = t => r.ms.some(x => x.tipo === t);
+  if (!r.ms.length) return Object.assign(r, { err: 'Ingresa al menos una hora.' });
+  if (tiene('INICIO_COLACION') !== tiene('FIN_COLACION')) return Object.assign(r, { err: 'Completa el inicio y el fin de la colación, o deja ambos en blanco.' });
+  if (r.ms.some(x => x.ts > Date.now() + 5 * 60e3)) return Object.assign(r, { err: 'No se pueden ingresar horas futuras.' });
+  if (!r.motivo) return Object.assign(r, { err: 'Escribe el motivo.' });
+  return r;
+}
+function manResumen() {
+  const r = manLeer(), el = $('#manResumen');
+  el.className = 'resumen' + (r.err ? ' err' : '');
+  if (r.err) { el.textContent = r.err; return; }
+  const t = x => r.ms.find(m => m.tipo === x);
+  let jornada = '';
+  if (t('ENTRADA') && t('SALIDA')) {
+    const col = t('INICIO_COLACION') ? t('FIN_COLACION').ts - t('INICIO_COLACION').ts : 0;
+    jornada = ` · jornada de ${fHoras((t('SALIDA').ts - t('ENTRADA').ts - col) / 36e5)}`;
+  }
+  const n = r.nombres.length * r.ms.length;
+  el.textContent = `${n} ${n === 1 ? 'marca' : 'marcas'} (${r.nombres.length} ${r.nombres.length === 1 ? 'persona' : 'personas'} × ${r.ms.length}) · ${fFechaLarga(r.ms[0].ts)}${jornada}.` + (r.nota ? ' ' + r.nota : '');
+}
+
+$('#manForm').onsubmit = async e => {
+  e.preventDefault();
+  const r = manLeer();
+  if (r.err) { toast(r.err); return; }
+  const n = r.nombres.length * r.ms.length;
+  const horas = r.ms.map(m => `${TIPOS[m.tipo].txt.toLowerCase()} ${hhmm(m.ts)}`).join(', ');
+  if (!await confirmar(`¿Registrar ${n} ${n === 1 ? 'marca' : 'marcas'}?`,
+    `${r.nombres.join(', ')} · ${r.obra} · ${fFechaLarga(r.ms[0].ts)}: ${horas}. Motivo: ${r.motivo}.`, 'Registrar')) return;
+  MAN.lote = MAN.lote || uuid(); // si se reintenta el mismo envío, no se duplica
+  busy(true, 'Registrando marcas…');
+  try {
+    const res = await api({ action: 'marcaAdmin', adminPin: MAN.pin, lote: MAN.lote, trabajadores: r.nombres, obra: r.obra,
+      marcas: r.ms, motivo: r.motivo, lat: S.fix ? S.fix.lat : null, lng: S.fix ? S.fix.lng : null, acc: S.fix ? S.fix.acc : null, ua: navigator.userAgent });
+    busy(false);
+    if (!res.ok) {
+      if (res.codigo === 'admin') { MAN.pin = null; SS.del('asis_admin'); $('#btnManual').click(); }
+      await confirmar('No se registraron las marcas', res.error || 'El servidor rechazó el envío.', 'Entendido');
+      return;
+    }
+    MAN.lote = null;
+    manResultado(res.creadas || [], r);
+  } catch (err) {
+    busy(false);
+    toast('Sin conexión. Las marcas a mano necesitan señal; intenta de nuevo.');
+  }
+};
+function manResultado(creadas, r) {
+  const nuevas = creadas.filter(c => !c.repetida).length;
+  $('#mrTit').textContent = nuevas === 1 ? '1 marca registrada' : `${nuevas} marcas registradas`;
+  $('#mrSub').textContent = `${r.obra} · ${fFechaLarga(r.ms[0].ts)} · ${r.motivo}`;
+  $('#mrLista').innerHTML = creadas.map(c => `<li><span><b>${esc(c.trabajador)}</b> · ${TIPOS[c.tipo].txt} ${hhmm(c.hora)}${c.repetida ? ' (ya estaba)' : ''}</span><span class="cod">${esc(c.codigo)}</span></li>`).join('');
+  $('#ovManRes').hidden = false;
+}
+$('#mrOtra').onclick = () => {
+  $('#ovManRes').hidden = true;
+  ORDEN_MARCAS.forEach(t => $('#h' + t).value = '');
+  $$('#manTrab input').forEach(c => c.checked = false);
+  manResumen();
+};
+$('#mrFin').onclick = () => { $('#ovManRes').hidden = true; pararGps(); mostrarLogin(); };
+
 /* ================================================================
    MODO DEMOSTRACIÓN (solo si API_URL está vacía)
    ================================================================ */
@@ -890,6 +1089,17 @@ const demo = {
       if (p.adminPin !== '9999') return { ok: false, error: 'PIN de administrador incorrecto (en la demo es 9999)' };
       const o = cfg.obras.find(x => x.nombre === p.obra); o.lat = p.lat; o.lng = p.lng; LS.set('asis_demo_cfg', cfg);
       return { ok: true };
+    }
+    if (p.action === 'marcaAdmin') {
+      if (p.adminPin !== '9999') return { ok: false, error: 'PIN de administrador incorrecto (en la demo es 9999)', codigo: 'admin' };
+      if (p.soloVerificar) return { ok: true };
+      const ms = this.marcas(), creadas = [];
+      for (const n of p.trabajadores) for (const m of p.marcas) {
+        ms.push({ trabajador: n, obra: p.obra, tipo: m.tipo, t: m.ts });
+        creadas.push({ trabajador: n, tipo: m.tipo, hora: m.ts, codigo: ((await sha(p.lote + n + m.tipo)) || uuid().replace(/-/g, '')).slice(0, 10).toUpperCase() });
+      }
+      LS.set('asis_demo_marcas', ms);
+      return { ok: true, creadas };
     }
     if (!cfg.trabajadores.includes(p.trabajador) || p.pin !== '1234') return { ok: false, error: 'PIN incorrecto (en la demo es 1234)', codigo: 'pin' };
     if (p.action === 'login') return Object.assign({ ok: true }, this.estado(p.trabajador));
